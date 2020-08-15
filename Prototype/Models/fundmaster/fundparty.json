@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundPartySchema",
+	"description": "A fund related party. Parties which participate to the platform have a PartyID. Parties for which a signature is required to authenticate properties have their public key defined as PartyPK.",
+	"type": "object",
+	"properties": {
+		"PartyID": {
+			"$ref": "../hyperledger/HLmsp.json#"
+		},
+		"PartyName": {
+			"type": "string"
+		},
+		"PartyTitle": {
+			"description": "A title to precede the name, e.g. 'independant administrator',...",
+			"type": "string"
+		},
+		"PartyAddress": {
+			"$ref": "../dltshift-definitions.json#/definitions/PartyAddress"
+		},
+		"PartyPK": {
+			"description": "The party public encryption key used to verify signatures",
+			"type": "string"
+		},
+		"PartyType": {
+			"type": "string",
+			"enum": [
+				"individual",
+				"corporation",
+				"state",
+				"administration",
+				"association"
+			]
+		},
+		"PartyRepresentant": {
+			"description": "The representing person for the involved party (@todo: as an object)",
+			"type": "string"
+		}
+	},
+	"required": [
+		"PartyName",
+		"PartyRepresentant"
+	]
+}

@@ -1,0 +1,56 @@
+[
+	{
+		"SpecItem": "FundOrderType",
+		"Descriptions": [
+			{"Name": "SUBSCRIBE", "Value": "A subscription order into an investment vehicle. The order may specify a quantity or an amount." },
+			{"Name": "REDEEM", "Value": "A redemption order from an investment vehicle. The order may specify a quantity or an amount" },
+			{"Name": "TRANSFER_OWNERSHIP", "Value": "Order from owner (or on behalf of owner) to transfer the ownership of some units to another investor." },
+			{"Name": "TRANSFER_VEHICLE", "Value": "Order to transfer units from a vehicle of a fund to another vehicle" },
+			{"Name": "CHOOSE_DIVIDEND_OPTION", "Value": "Dividend option choice order" }
+		]		
+	},
+	{
+		"SpecItem": "SpecialOrderType",
+		"Descriptions": [
+			{"Name": "DIVIDEND", "Value": "Dividend distribution instruction from issuer." },
+			{"Name": "DIVIDEND_WITH_OPTION", "Value": "Dividend distribution instruction from issuer, expecting an option choice by units holders" },
+			{"Name": "TRANSFER_FUND", "Value": "A transfer of units from one fund to another fund." }
+		]
+	},
+	{
+		"SpecItem": "OtherOrderType",
+		"Descriptions": [
+			{"Name": "OPEN",  "Value":  "Fund or vehicle opening instruction from issuer." },
+			{"Name": "CLOSE", "Value": "Fund or vehicle closing instruction from issuer, with implicit liquidation (redemption)." },
+			{"Name": "MERGE", "Value": "Fund or vehicle closing instrucion from issuer, with implicit transfer to a targer fund or vehicle" },
+			{"Name": "FREEZE","Value": "Freeze instruction from issuer or regulator, in effect halting order processing." },
+			{"Name": "REBASE", "Value": "A split instruction from issuer to redefine units and rebase NAV" }
+		]
+	},
+	{
+		"SpecItem": "PositionStatus",
+		"Descriptions": [
+			{"Name": "settled",  "Value":  "Order has been sucessfully settled. Terminal status (success)." },
+			{"Name": "pendingSettlement",  "Value":  "Order awaiting settlement process outcome." },
+			{"Name": "pendingInstruction",  "Value":  "Executed order awaiting settlement instructions to be sent.In most cases, this step is merged with executed as instructions are posted as soon as price is revealed." },
+			{"Name": "executed", "Value": "Order is priced and ready for settlement instructions to be sent." },
+			{"Name": "pendingExecution", "Value": "Order is irevocable but price is not revealed yet" },
+			{"Name": "transmitted","Value": "Initial state of an accepted posted order, awaiting for execution" },
+			{"Name": "rejected", "Value": "Order has been directly rejected upon submission" },
+			{"Name": "failedSettlement", "Value": "Settlement failed. Final failure state" },
+			{"Name": "failedInstruction", "Value": "Instruction failed." },
+			{"Name": "failedExecution", "Value": "Execution failed. Possibly recoverable" },
+			{"Name": "S", "Value": "Short for settled" },
+			{"Name": "PS", "Value": "Short for pendingSettlement" },
+			{"Name": "PI", "Value": "Short for pendingInstruction" },
+			{"Name": "X", "Value": "Short for executed" },
+			{"Name": "PX", "Value": "Short for pendingExecution" },
+			{"Name": "T", "Value": "Short for transmitted" },
+			{"Name": "FT", "Value": "Short for rejected (failed transmitted)" },
+			{"Name": "FS", "Value": "Short for failed settlement" },
+			{"Name": "FI", "Value": "Short for failed instruction" },
+			{"Name": "FX", "Value": "Short for failed execution" }
+		]
+	}
+]
+

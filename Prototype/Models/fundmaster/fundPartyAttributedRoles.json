@@ -1,0 +1,20 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundPartyAttributedRoles",
+	"description": "Regulated Roles for which a party is eligible.",
+	"type": "object",
+	"properties": {
+		"Party": {
+			"$ref": "fundParty.json#"
+		},
+		"PartyAttributedRoles": {
+			"type": "array",
+			"items": {
+				"$ref": "fundPartyRole.json#"
+			}
+		}
+	},
+	"required": [
+		"PartyID"
+	]
+}

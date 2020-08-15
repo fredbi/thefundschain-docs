@@ -1,0 +1,100 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundAgreementSchema",
+	"description": "A regulator's agreement to distribute a fund or vehicle within a given jurisdiction",
+	"definitions": {
+		"FundAgreementType": {
+			"description": "The type of agreement delivered by the regulator to funds or individual vehicles within funds. The defaut is cross-jurisdiction distribution agreement, which corresponds, under EU rules, to a UCITS passport",
+			"type": "string",
+			"enum": [
+				"registration",
+				"distribution-domestic",
+				"distribution-crossjurisdiction",
+				"modification",
+				"closure",
+				"freeze",
+				"liquidation"
+			],
+			"default": "distribution-crossjurisdiction"
+		},
+		"FundAgreementDates": {
+			"description": "The dates and event with which the agreement is delivered (@todo)",
+			"type": "object",
+			"properties": {
+				"AgreementValidityPeriod": {
+					"$ref": "../../dltshift-definitions.json#/definitions/Period"
+				},
+				"AgreementEventDate": {
+					"type": "string",
+					"format": "date-time"
+				}
+			},
+			"required": [
+				"AgreementEventDate",
+				"AgreementValidityPeriod"
+			]
+		},
+		"FundAgreementStatus": {
+			"description": "Workflow agreement status",
+			"type": "string",
+			"enum": [
+				"initiated",
+				"pendingRegulator",
+				"pendingIssuer",
+				"pendingSecRegistrationAuth",
+				"PendingLEIRegistrationAuth",
+				"PendingCirculationAuth",
+				"validated",
+				"rejected"
+			],
+			"default": "initiated"
+		},
+		"FundAgreementVisa": {
+			"$ref": "../../dltshift-definitions.json#/definitions/Visa"
+		},
+		"FundAgreementSeal": {
+			"$ref": "../../dltshift-definitions.json#/definitions/Seal"
+		},
+		"FundOrVehicleAgreement": {
+			"description": "Agreement attributed to a fund or a vehicle within a fund",
+			"type": "object",
+			"properties": {
+				"AgreementName": {
+					"type": "string"
+				},
+				"RegistrationAuthority": {
+					"$ref": "fundregistration.json#/definitions/FundRegistrationAuthority"
+				},
+				"AgreementType": {
+					"$ref": "#/definitions/FundAgreementType"
+				},
+				"AgreementDates": {
+					"$ref": "#/definitions/FundAgreementDates"
+				},
+				"AgreementStatus": {
+					"$ref": "#/definitions/FundAgreementStatus"
+				},
+				"AgreementVisa": {
+					"$ref": "#/definitions/FundAgreementVisa"
+				},
+				"AgreementSeal": {
+					"$ref": "#/definitions/FundAgreementSeal"
+				}
+			},
+			"required": [
+				"AgreementName",
+				"RegistrationAuthority",
+				"AgreementType",
+				"AgreementDates",
+				"AgreementStatus"
+			]
+		},
+		"FundOrVehicleAgreements": {
+			"description": "A list of agreements",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/FundOrVehicleAgreement"
+			}
+		}
+	}
+}

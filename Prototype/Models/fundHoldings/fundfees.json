@@ -1,0 +1,74 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundFeesSchema",
+	"description": "Definitions for all kinds of fees on orders",
+	"definitions": {
+		"OrderFeesType": {
+			"type": "string",
+			"enum": [
+				"transaction-fee",
+				"frontend-load",
+				"backend-load",
+				"no-load"
+			]
+		},
+		"OrderFeesDetails": {
+			"description": "More details on each type of fees, by beneficiary",
+			"type": "object",
+			"properties": {
+				"Beneficiary": {
+					"type": "string"
+				},
+				"DetailedFees": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"DetailedFeesType": {
+								"type": "string"
+							},
+							"DetailedFeesRatePercent": {
+								"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+							},
+							"DetailedFeesAmount": {
+								"$ref": "../dltshift-definitions.json#/definitions/Amount"
+							}
+						}
+					}
+				}
+			}
+		},
+		"OrderFeesSpec": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"FeesType": {
+						"$ref": "#/definitions/OrderFeesType"
+					},
+					"FeesDetails": {
+						"$ref": "#/definitions/OrderFeesDetails"
+					},
+					"FeesRatePercent": {
+						"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+					},
+					"FeesAmount": {
+						"$ref": "../dltshift-definitions.json#/definitions/Amount"
+					}
+				}
+			}
+		},
+		"ProvisionedFeesSpec": {
+			"type": "object",
+			"properties": {
+				"todo": {
+					"description": "Difference between gross and net value, detailed by the fund accountant (@todo). For vehicles publishing only GAVs (e.g. hedge funds...), an estimate of fees to be invoiced at next fees collection date",
+					"type": "array",
+					"items": {
+						"description": "@todo"
+					}
+				}
+			}
+		}
+	}
+}

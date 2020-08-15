@@ -1,0 +1,86 @@
+{
+  "data": [
+    {
+      "summary": {
+        "id": "opcvm1", "name": "Equity Value Performance Plus Fund", "description": "Sample mutual fund 1",
+        "vehicles": [ 
+            {"id": "FR0123456789", "name": "Equity Value Perf. Plus R", "description": "Equity Value Perf. Plus for retail investors", "parentid": "opcvm1" },
+            {"id": "FR0123456780", "name": "Equity Value Perf. Plus I", "description": "Equity Value Perf. Plus for institutional investors", "parentid": "opcvm1" },
+            {"id": "FR0123456781", "name": "Equity Value Perf. Plus D", "description": "Equity Value Perf. Plus dividend share class", "parentid": "opcvm1" }
+          ], "universes": [ "Mutual Funds", "Intermediated"]
+      },
+      "master": [
+        { "SectionType": "fundOperations",
+          "FundMasterPayload": { 
+            "SupportedFundOperations": {
+              "SupportedOperations": ["SUBSCRIBE", "REDEEM", "ADJUSTMENT", "OPEN", "CLOSE"], 
+              "RulesForOperations": [ "OperationRule1", "OperationRule2" ], 
+              "ValuationRules":  [ "ValuationRule1", "ValuationRule2" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "summary": {
+        "id": "opcvm2", "name": "Bond Markets Security Fund", "description": "Sample mutual fund 2",
+        "vehicles": [ 
+            {"id": "FR1123456789", "name": "Bond Markets Security R", "description": "Bond Markets Security for retail investors", "parentid": "opcvm2" },
+            {"id": "FR1123456780", "name": "Bond Markets Security I", "description": "Bond Markets for institutional investors", "parentid": "opcvm2" },
+            {"id": "FR1123456781", "name": "Bond Markets Security D", "description": "Bond Markets dividend share class", "parentid": "opcvm2" }
+          ],
+          "universes": [ "Mutual Funds", "Intermediated" ]
+      },
+      "master": [
+        { "SectionType": "fundOperations",
+          "FundMasterPayload": { 
+            "SupportedFundOperations": {
+              "SupportedOperations": ["SUBSCRIBE", "REDEEM", "ADJUSTMENT", "OPEN", "CLOSE"], 
+              "RulesForOperations": [ "OperationRule1", "OperationRule2" ], 
+              "ValuationRules":  [ "ValuationRule1", "ValuationRule2" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "summary": {
+        "id": "opcvm3", "name": "Money Markets Europe Fund", "description": "Sample mutual fund 3",
+        "vehicles": [ 
+            {"id": "FR2123456789", "name": "Money Markets Europe R", "description": "Money Markets Europe for retail investors", "parentid": "opcvm3" },
+            {"id": "FR2123456780", "name": "Money Markets Europe I", "description": "Money Markets Europe for institutional investors", "parentid": "opcvm3" },
+            {"id": "FR2123456781", "name": "Money Markets Europe USD", "description": "Money Markets Europe for USD subscriptions", "parentid": "opcvm3" }
+          ],
+          "universes": [ "Mutual Funds" ]
+      },
+      "master": [
+        { "SectionType": "fundOperations",
+          "FundMasterPayload": { 
+            "SupportedFundOperations": {
+              "SupportedOperations": ["SUBSCRIBE", "REDEEM", "ADJUSTMENT", "OPEN", "CLOSE"], 
+              "RulesForOperations": [ "OperationRule1", "OperationRule2" ], 
+              "ValuationRules":  [ "ValuationRule1", "ValuationRule2" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "summary": {
+        "id": "mandat1", "name": "Big Trust Pension Plan", "description": "Sample mandate 1",
+        "universes": "Mandates"
+      },
+      "master": [
+        { "SectionType": "fundOperations",
+          "FundMasterPayload": { 
+            "SupportedFundOperations": {
+              "SupportedOperations": ["SUBSCRIBE", "REDEEM", "ADJUSTMENT", "OPEN", "CLOSE"], 
+              "RulesForOperations": [ "OperationRule1", "OperationRule2" ], 
+              "ValuationRules":  [ "ValuationRule1", "ValuationRule2" ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

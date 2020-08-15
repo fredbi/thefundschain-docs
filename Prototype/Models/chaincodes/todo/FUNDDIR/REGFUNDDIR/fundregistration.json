@@ -1,0 +1,285 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundRegistrationSchema",
+	"description": "FundsChain schema supporting a fund's registration process (agreement workflow). Copyright TheFundsChain 2016. This schema entry is a directory for regulated products.",
+	"definitions": {
+		"FundJurisdiction": {
+			"description": "Describes a fund jurisdiction (@todo extend)",
+			"type": "string"
+		},
+		"FundRegistrationAuthority": {
+			"description": "Registration authority, in charge of registering funds (may be distinct from LEI auhority)",
+			"type": "object",
+			"properties": {
+				"RegistrationAuthorityName": {
+					"type": "string"
+				},
+				"RegistrationAuthorityJurisdictions": {
+					"description": "Jurisdictions oversighted by the registration authority",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/FundJurisdiction"
+					}
+				}
+			}
+		},
+		"FundRegistration": {
+			"description": "Structure describing a fund registration",
+			"type": "object",
+			"properties": {
+				"FundRegistrationCountry": {
+					"$ref": "../../dltshift-definitions.json#/definitions/Country"
+				},
+				"FundRegistrationAuthority": {
+					"$ref": "#/definitions/FundRegistrationAuthority"
+				},
+				"FundRegisteredLEI": {
+					"description": "Description of the registered legal entity",
+					"$ref": "leicode.json#/definitions/RegisteredLEI"
+				},
+				"FundRegistrationStatus": {
+					"description": "The issuer's agreement status",
+					"type": "string",
+					"enum": [
+						"initiated",
+						"pendingRegulator",
+						"pendingIssuer",
+						"validated",
+						"rejected"
+					],
+					"default": "initiated"
+				},
+				"FundRegistrationSeal": {
+					"$ref": "../../dltshift-definitions.json#/definitions/Seal"
+				}
+			},
+			"required": [
+				"FundRegistrationCountry",
+				"FundRegistrationAuthority"
+			]
+		}
+	},
+	"type": [
+		"object",
+		"array"
+	],
+	"items": {
+		"id": "Product",
+		"title": "Product",
+		"description": "Directory Entry for a fund product ",
+		"type": "object",
+		"properties": {
+			"PopulatedData": {
+				"description": "Contributed data from other parties",
+				"type": "object",
+				"properties": {
+					"SecurityCirculationSystems": {
+						"type": "array",
+						"items": [
+							{
+								"type": "object",
+								"properties": {
+									"SecurityCirculationSystemPK": {
+										"type": "string"
+									},
+									"SecurityCirculationSystem": {
+										"enum": [
+											"euroclear",
+											"clearstream"
+										]
+									},
+									"SecurityCirculationSystemSignature": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"SecurityCirculationSystemPK",
+									"SecurityCirculationSystem",
+									"SecurityCirculationSystemSignature"
+								]
+							}
+						],
+						"additionalItems": false
+					},
+					"SecurityCodesForVehicles": {
+						"type": "array",
+						"items": {
+							"id": "SecurityCodeForVehicle",
+							"type": "object",
+							"properties": {
+								"VehicleID": {
+									"description": "A vehicle identifier in the Vehicles list below",
+									"type": "string"
+								},
+								"SecurityCode": {
+									"description": "Whenever an investment vehicle is issued as a security, it's market security code.",
+									"$ref": "../../dltshift-definitions.json#definitions/RegisteredSecurityCode"
+								}
+							},
+							"required": [
+								"VehicleID",
+								"SecurityCode"
+							],
+							"additionalProperties": false
+						}
+					},
+					"RegulatorCode": {
+						"type": "object",
+						"properties": {
+							"RegulatorPK": {
+								"type": "string"
+							},
+							"RegulatorName": {
+								"type": "string"
+							},
+							"RegulatorCodeType": {
+								"enum": [
+									"domestic"
+								],
+								"default": "domestic"
+							},
+							"RegulatorCode": {
+								"type": "string"
+							},
+							"RegulatorSignature": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"RegulatorPK",
+							"RegulatorName",
+							"RegulatorCodeType",
+							"RegulatorCode",
+							"RegulatorSignature"
+						]
+					},
+					"LEICode": {
+						"$ref": "leicode.json#"
+					}
+				}
+			},
+			"FundID": {
+				"description": "Chaincode ID of the target chaincode subject to the agreement workflow",
+				"type": "string"
+			},
+			"FundChainCodeSignature": {
+				"description": "The signature of the chaincode operating this product",
+				"type": "string"
+			},
+			"FundHash": {
+				"description": "A hash signature of the fund's subset of state variables subject to agreement",
+				"type": "string"
+			},
+			"Vehicles": {
+				"description": "List of registered vehicles operating under this product",
+				"type": "array",
+				"items": [
+					{
+						"id": "Vehicle",
+						"title": "Vehicle",
+						"type": "object",
+						"properties": {
+							"FundVehicleID": {
+								"description": "The ID of the investment vehicle exposed through this product",
+								"type": "string"
+							}
+						},
+						"required": [
+							"FundVehicleID"
+						]
+					}
+				],
+				"additionalItems": false
+			},
+			"Issuer": {
+				"description": "Characterization of the issuer of the product",
+				"type": "object",
+				"properties": {
+					"IssuerAgreementStatus": {
+						"description": "The issuer's agreement status",
+						"enum": [
+							"initiated",
+							"pendingRegulator",
+							"pendingIssuer",
+							"validated",
+							"rejected"
+						],
+						"default": "initiated"
+					},
+					"IssuerName": {
+						"type": "string"
+					},
+					"IssuerID": {
+						"description": "The product issuer party ID on the platform",
+						"type": "string"
+					}
+				},
+				"required": [
+					"IssuerAgreementStatus",
+					"IssuerID"
+				]
+			},
+			"FundAgreement": {
+				"$ref": "fundagreement.json#"
+			}
+			
+		},
+		"required": [
+			"FundID",
+			"FundChainCodeSignature",
+			"FundHash",
+			"Issuer",
+			"FundAgreementStatus",
+			"FundAgreementVisa"
+		]
+	},
+	"properties": {
+		"RegulatedDirectory": {
+			"description": "The description of the directory. It may only be updated by the owner (regulator).",
+			"type": "object",
+			"properties": {
+				"LastSynchTime": {
+					"description": "Timestamp of last synch with Fund chaincode",
+					"type": "string",
+					"default": "190001010000000"
+				},
+				"DirectoryOwnerName": {
+					"type": "string"
+				},
+				"DirectoryOwnerID": {
+					"type": "string"
+				},
+				"Jurisdictions": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"DirectoryJuridictionAreaType": {
+								"enum": [
+									"country",
+									"transnational"
+								],
+								"default": "country"
+							},
+							"DirectoryJurisdictionArea": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"DirectoryJuridictionAreaType"
+						]
+					}
+				}
+			},
+			"required": [
+				"LastSynchTime",
+				"DirectoryOwnerName",
+				"DirectoryOwnerID"
+			]
+		}
+	},
+	"required": [
+		"RegulatedDirectory"
+	],
+	"additionalProperties": false
+}

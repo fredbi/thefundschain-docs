@@ -1,0 +1,95 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundTransactionSchema",
+	"definitions": {
+	 	"TransactionType": {
+			"type": "string",
+			"enum": [
+				"POPULATE_MASTER",
+				"ORDER",
+				"POPULATE_ACL",
+				"POPULATE_NAV"
+			]
+	 	}
+	 },
+	 "description": "TheFundsChain schema supporting a fund's operating process. This schema describes all transactions altering the fund's state: master data, orders, ACL configuration and NAV",
+	 "type": "object",
+	 "properties": {
+		 "Header": {
+			 "$ref": "../../../../dltshift-definitions.json#/definitions/SchemaHeader"
+		},
+		"FundTransaction": {
+			"description": "A transaction altering the fund's state",
+			"oneOf": [
+				{ 
+					"type": "object",
+					"properties": {
+						"TransactionType": {
+							"type": "string",
+							"enum": ["POPULATE_MASTER"]
+						},
+						"TransactionPayload": {
+							"$ref": "../../../../fundMaster/fundmaster.json"
+						}
+					},
+					"required": [
+						"TransactionType",
+						"TransactionPayload"
+					]
+				},
+				{ 
+					"type": "object",
+					"properties": {
+						"TransactionType": {
+							"type": "string",
+							"enum": ["ORDER"]
+						},
+						"TransactionPayload": {
+							"$ref": "../../../../fundHoldings/fundorders.json"
+						}
+					},
+					"required": [
+						"TransactionType",
+						"TransactionPayload"
+					]
+				},	
+				{
+					"type": "object",
+					"properties": {
+						"TransactionType": {
+							"type": "string",
+							"enum": ["POPULATE_ACL"]
+						},
+						"TransactionPayload": {
+							"$ref": "../../../../fundHoldings/fundorders.json"
+						}
+					},
+					"required": [
+						"TransactionType",
+						"TransactionPayload"
+					]
+				},
+				{
+					"type": "object",
+					"properties": {
+						"TransactionType": {
+							"type": "string",
+							"enum": ["POPULATE_NAV"]
+						},
+						"TransactionPayload": {
+							"type": "array",
+							"uniqueItems": true,
+							"items": {
+								"$ref": "../../../../fundHoldings/fundvaluation.json#/definitions/NAV"
+							}
+						}
+					},
+					"required": [
+						"TransactionType",
+						"TransactionPayload"
+					]
+				}
+			]			
+		}
+	}
+}

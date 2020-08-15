@@ -1,0 +1,62 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundRegistrationSchema",
+	"description": "FundsChain schema supporting a fund's registration process (agreement workflow). Copyright TheFundsChain 2016. This schema entry is a directory for regulated products.",
+	"definitions": {
+		"FundJurisdiction": {
+			"description": "Describes a fund jurisdiction (@todo extend)",
+			"type": "string"
+		},
+		"FundRegistrationAuthority": {
+			"description": "Registration authority, in charge of registering funds (may be distinct from LEI auhority)",
+			"type": "object",
+			"properties": {
+				"RegistrationAuthorityName": {
+					"type": "string"
+				},
+				"RegistrationAuthorityJurisdictions": {
+					"description": "Jurisdictions oversighted by the registration authority",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/FundJurisdiction"
+					}
+				}
+			}
+		},
+		"FundRegistration": {
+			"description": "Structure describing a fund registration",
+			"type": "object",
+			"properties": {
+				"FundRegistrationCountry": {
+					"$ref": "../../dltshift-definitions.json#/definitions/Country"
+				},
+				"FundRegistrationAuthority": {
+					"$ref": "#/definitions/FundRegistrationAuthority"
+				},
+				"FundRegisteredLEI": {
+					"description": "Description of the registered legal entity",
+					"$ref": "leicode.json#/definitions/RegisteredLEI"
+				},
+				"FundRegistrationStatus": {
+					"description": "The issuer's agreement status",
+					"type": "string",
+					"enum": [
+						"initiated",
+						"pendingRegulator",
+						"pendingIssuer",
+						"validated",
+						"rejected"
+					],
+					"default": "initiated"
+				},
+				"FundRegistrationSeal": {
+					"$ref": "../../dltshift-definitions.json#/definitions/Seal"
+				}
+			},
+			"required": [
+				"FundRegistrationCountry",
+				"FundRegistrationAuthority"
+			]
+		}
+	}
+}

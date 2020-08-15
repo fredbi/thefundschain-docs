@@ -1,0 +1,505 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "FundOperationsSchema",
+	 "description": "Definition of a fund's rules for operations: NAV application rules (operation pricing), specific calendar rules, compliance rules and specific fees rules",
+	 "type": "object",
+	 "properties": {
+		 "SupportedFundOperations": {
+			 "description": "Description of operations at the funds level. If the fund contains vehicles, NAV calendars are specified at the vehicle level",
+			 "$ref": "#/definitions/OperationsSpec"
+		},
+		 "SupportedVehicleOperations": {
+			 "description": "An override of the operations schema, including NAVs and calendar rules, applicable to the vehicle",
+			 "type": "array",
+			 "uniqueItems": true,
+			 "items": {
+				 "type": "object",
+				 "properties": {
+					 "FundVehicleID": {
+						 "$ref": "../fundvehicle.json#/definitions/VehicleID"
+					},
+					 "FundVehicleOperations": {
+						 "description": "Override specification for this vehicle + calendar and NAVs",
+						 "$ref": "#/definitions/OperationsSpec"
+					}
+				}
+			}
+		}
+	},
+	 "required": [
+		"SupportedFundOperations"
+	],
+	 "definitions": {
+		 "FundOrderType": {
+			 "description": "Types of investor orders supported by a fund chaincode. Transfer ownership is not always allowed, depending on regulation. Transfer from a vehicle to another is used to move money from a subfund to another.",
+			 "type": "string",
+			 "enum": [
+				"SUBSCRIBE",
+				"REDEEM",
+				"TRANSFER_OWNERSHIP",
+				"TRANSFER_VEHICLE",
+				"CHOOSE_DIVIDEND_OPTION"
+			]
+		},
+		 "FundSpecialOrderType": {
+			 "description": "Types of special orders supported by a fund chaincode (not triggered by investors). Transfer to another fund is used in case of fund merger. Adjustement is used when NAVs are revised/errors are detected/a fund uses ajustement factors to determine the actual number of units attributed to the investor",
+			 "type": "string",
+			 "enum": [
+				"DIVIDEND",
+				"DIVIDEND_WITH_OPTION",
+				"TRANSFER_FUND",
+				"ADJUSTEMENT"
+			]
+		},
+		 "FundOtherOperationsType": {
+			 "description": "Types of special operations (e.g. corporate actions on fund or vehicle)",
+			 "type": "string",
+			 "enum": [
+				"OPEN",
+				"CLOSE",
+				"MERGE",
+				"FREEZE",
+				"REBASE"
+			]
+		},
+		 "FundOperation": {
+			 "description": "Types of operations supported by a fund chaincode",
+			 "oneOf": [
+				{
+					 "$ref": "#/definitions/FundOrderType"
+				},
+				{
+					 "$ref": "#/definitions/FundSpecialOrderType"
+				},
+				{
+					 "$ref": "#/definitions/FundOtherOperationsType"
+				}
+			]
+		},
+		 "FundOperationRule": {
+			 "description": "An extension of FundOperation to support rules on ANY operation",
+			 "anyOf": [
+				{
+					 "$ref": "#/definitions/FundOperation"
+				},
+				{
+					 "type": "string",
+					 "enum": [
+						"any"
+					]
+				}
+			]
+		},
+		 "ValuationWeekDay": {
+			 "description": "For daily frequencies, week days eligible to NAV publication (there may be several). For weekly frequencies, the valuation day specification (e.g. valuations on thursdays only). Applies to weekly valuated funds. For other non daily frequencies, interpreted as first day of the week PAST the frequency rule (e.g. first tuesday of each month). Any day is a short cut for a list from monday to sunday, banking-day is a shortcut for a list from monday to friday.",
+			 "oneOf": [
+				{
+					 "$ref": "../../dltshift-definitions.json#/definitions/Weekday"
+				},
+				{
+					 "type": "string",
+					 "enum": [
+						"any-day",
+						"banking-day"
+					]
+				}
+			]
+		},
+		 "CalendarExceptionItem": {
+			 "description": "An extention of the CalendarItem to manage NAV calendar exceptions",
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "../../dltshift-definitions.json#/definitions/CalendarItem"
+				},
+				{
+					 "properties": {
+						 "CalendarException": {
+							 "type": "string",
+							 "enum": [
+								"exceptionalNAV",
+								"exceptionalMissingNAV"
+							]
+						},
+						 "CalendarExceptionComment": {
+							 "type": "string"
+						}
+					},
+					 "required": [
+						"CalendarException"
+					]
+				}
+			]
+		},
+		 "ValuationFrequencySpec": {
+			 "description": "Nominal valuation frequency",
+			 "oneOf": [
+				{
+					 "$ref": "../../dltshift-definitions.json#/definitions/Frequency"
+				},
+				{
+					 "type": "string",
+					 "enum": [
+						"exceptional"
+					]
+				}
+			]
+		},
+		 "ValuationWeekDaysSpec": {
+			 "description": "List of eligible NAV days specifications. E.g. funds valued from monday to thurday, plus sunday are specified with a list (monday,..,thursday, sunday). Other example (monday, thursday) specifies a fund valuated twice a week only",
+			 "type": "array",
+			 "uniqueItems": true,
+			 "items": {
+				 "$ref": "#/definitions/ValuationWeekDay"
+			}
+		},
+		 "NAVCalendarRules": {
+			 "description": "Valuation calendar rules of the fund (i.e. generate a FundNAVCalendar) (applicable to official or technical NAVs)",
+			 "type": "object",
+			 "properties": {
+				 "ValuationFrequency": {
+					 "$ref": "#/definitions/ValuationFrequencySpec"
+				},
+				 "ValuationWeekDays": {
+					 "$ref": "#/definitions/ValuationWeekDaysSpec"
+				},
+				 "ValuationDatesSpec": {
+					 "description": "For frequencies other than daily and weekly, the valuation day specification. This spec is used jointly with Weekdays specification: e.g. if ValuationWeekDays = ('banking-day') and ValuationDatesSpec = 'end-of-period-first-after', the fund's NAV is published every first banking day after end-of-month. EOM/SOM also apply to quarterly and yearly frequencies. Default behavior is 'end-of-period-first-after'. If 'end-of-period-last-before', this is the last banking day before the end of the month. For daily or weekly valuations, the following specifications are applicable with similar semantics: holiday-period-first-after (default) and holiday-period-last-before",
+					 "type": "string",
+					 "enum": [
+						"end-of-period-first-after",
+						"start-of-period-first-after",
+						"end-of-period-last-before",
+						"start-of-period-last-before",
+						"holiday-period-first-after",
+						"holiday-period-last-before"
+					]
+				},
+				 "BankHolidaysCalendar": {
+					 "description": "List of forthcoming bank holidays",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "$ref": "../../dltshift-definitions.json#/definitions/CalendarItem"
+					}
+				}
+			},
+			 "required": [
+				"ValuationFrequency",
+				"ValuationWeekDays",
+				"BankHolidaysCalendar"
+			]
+		},
+		 "FundValuationRulesSpec": {
+			 "description": "General valuation rules: currency, decimalization, multi-currency support, ...",
+			 "type": "object",
+			 "properties": {
+				 "ValuationCurrency": {
+					 "description": "Main valuation currency (applicable to funds and vehicles, possibly with different values)",
+					 "$ref": "../../dltshift-definitions.json#/definitions/Currency"
+				},
+				 "ValuationAmountDecimalization": {
+					 "description": "Number of decimals on asset values",
+					 "type": "integer",
+					 "default": 2
+				},
+				 "NAVDecimalization": {
+					 "description": "Number of decimals on NAV per share (also apply to GAVs)",
+					 "type": "integer",
+					 "default": 3
+				},
+				 "UnitDecimalization": {
+					 "description": "Number of decimals for quantities expressed in fund's units",
+					 "type": "integer",
+					 "default": 3
+				},
+				 "InitialNAV": {
+					 "description": "NAV applied to first investors (e.g. 100)",
+					 "$ref": "../../dltshift-definitions.json#/definitions/Amount"
+				},
+				 "AllowedOrderCurrencies": {
+					 "description": "List of alternate currencies allowed for orders, beside the NAV currency",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "type": "object",
+						 "properties": {
+							 "Currency": {
+								 "$ref": "../../dltshift-definitions.json#/definitions/Currency"
+							},
+							 "UseCurrencyAccount": {
+								 "description": "Tells if order is performed on fund's currency account or a FX operation must be carried on at settlement time",
+								 "type": "string",
+								 "enum": [
+									"yes",
+									"no",
+									"y",
+									"n"
+								],
+								 "default": "no"
+							}
+						},
+						 "required": [
+							"Currency",
+							"UseCurrencyAccount"
+						]
+					}
+				},
+				 "AlternateCurrencies": {
+					 "description": "Alternate currencies for NAV publication (same NAV, same vehicle, converted in different currencies)",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "type": "object",
+						 "properties": {
+							 "Currency": {
+								 "$ref": "../../dltshift-definitions.json#/definitions/Currency"
+							},
+							 "ReferenceFXRateSource": {
+								 "type": "string"
+							},
+							 "ReferenceFXRateCutOff": {
+								 "type": "string"
+							}
+						},
+						 "required": [
+							"Currency"
+						]
+					}
+				}
+			},
+			 "required": [
+				"ValuationCurrency",
+				"ValuationAmountDecimalization",
+				"NAVDecimalization",
+				"UnitDecimalization",
+				"InitialNAV"
+			]
+		},
+		 "FundNAVCalendarSpec": {
+			 "description": "Valuation calendar specification for a fund or a vehicle. Calendars are defined with rules, with possible exceptions",
+			 "type": "object",
+			 "properties": {
+				 "FundNAVCalendarRules": {
+					 "description": "Configuration of calendar rules for official NAV, defining investors entry/exit points",
+					 "$ref": "#/definitions/NAVCalendarRules"
+				},
+				 "FundTechnicalNAVCalendarRules": {
+					 "description": "Configuration of calendar rules for non offical (technical) NAV, which may be used for reporting purpose but not for entry/exit points",
+					 "$ref": "#/definitions/NAVCalendarRules"
+				},
+				 "ExceptionalNAVCalendar": {
+					 "description": "Specification of NAV calendar entries which do not follow rules",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "$ref": "#/definitions/CalendarExceptionItem"
+					}
+				},
+				 "NAVCalendarLookAhead": {
+					 "description": "Look ahead period for NAVCalendar calculation, in calendar days",
+					 "type": "integer",
+					 "default": 90
+				}
+			},
+			 "required": [
+				"FundNAVCalendarRules",
+				"NAVCalendarLookAhead"
+			]
+		},
+		 "FundOperationNAVRules": {
+			 "description": "Applies specifically to a given type of operation. Describes how we calculate the NAV date to determine the price of an operation, with general calendar rules",
+			 "type": "object",
+			 "properties": {
+				 "PriceDeterminationMethod": {
+					 "description": "Convention to determine price, given an order submission date: known or unknown price.",
+					 "type": "string",
+					 "enum": [
+						"known-price",
+						"unknown-price"
+					],
+					 "default": "unknown-price"
+				}
+			},
+			 "required": [
+				"PriceDeterminationMethod"
+			]
+		},
+		 "FundOperationCalendarRules": {
+			 "description": "Applies specifically to a given type of operation. Describes which date must be taken into account to calculate the NAV date (e.g. override the submission date).",
+			 "type": "object",
+			 "properties": {
+				 "ConstrainedSubmissionPeriod": {
+					 "description": "Describes constrained submission periods for a type of operation. Used to model lockup periods, limited subscriptions periods...",
+					 "type": "object",
+					 "properties": {
+						 "FixedPeriod": {
+							 "description": "Constraint expressed as a fixed, absolute, period of time",
+							 "$ref": "../../dltshift-definitions.json#/definitions/Period"
+						},
+						 "RelativePeriod": {
+							 "description": "Constraint expressed as a relative period of time: order may not be passed (duration) time after|before the reference time",
+							 "type": "object",
+							 "properties": {
+								 "ConstraintReferenceTime": {
+									 "type": "string",
+									 "enum": [
+										"last-nav",
+										"last-investor-subscription",
+										"next-nav",
+										"last-investor-redemption",
+										"start-of-month",
+										"end-of-month",
+										"start-of-quarter",
+										"end-of-quarter",
+										"lockup-period-fifo"
+									]
+								},
+								 "ConstraintType": {
+									 "type": "string",
+									 "enum": [
+										"before",
+										"after",
+										"strictly-before",
+										"strictly-after"
+									]
+								},
+								 "ConstraintDuration": {
+									 "$ref": "../../dltshift-definitions.json#/definitions/Duration"
+								}
+							},
+							 "required": [
+								"ConstraintReferenceTime",
+								"ConstraintType",
+								"ConstraintDuration"
+							]
+						}
+					}
+				},
+				 "ForceSubmissionDateConvention": {
+					 "description": "Same-day convention is used to value special orders such as transfers and adjustments, using the NAV at the submission day, whatever NAV convention is used",
+					 "type": "string",
+					 "enum": [
+						"none",
+						"same-day"
+					],
+					 "default": "none"
+				},
+				 "PriceLag": {
+					 "description": "Lag expressed in valuation cycles",
+					 "type": "integer",
+					 "default": 0
+				}
+			}
+		},
+		 "FundOperationComplianceRules": {
+			 "description": "Supported compliance rules checked by the order workflow (@todo). investment-ratio for a single investor, kyc, suitability. Each rule may be parameterized by an array of Name=Value parameters (e.g. investment-ratio check gets a percentage as parameter",
+			 "type": "array",
+			 "items": {
+				 "type": "object",
+				 "properties": {
+					 "ComplianceRule": {
+						 "description": "",
+						 "enum": [
+							"none",
+							"kyc",
+							"suitability",
+							"investment-ratio"
+						]
+					},
+					 "ComplianceRuleParameters": {
+						 "description": "Input parameters of compliances rules",
+						 "$ref": "../../dltshift-definitions.json#/definitions/NameValueList"
+					}
+				},
+				 "required": [
+					"ComplianceRule"
+				]
+			}
+		},
+		 "FundOperationContractualRules": {
+			 "description": "Supported contractual rules checked by the order workflow (@todo) (e.g. rules defined by the fund and do not originate from a regulator. investment-ratio for a single investor,",
+			 "type": "array",
+			 "items": {
+				 "type": "object",
+				 "properties": {
+					 "ComplianceRule": {
+						 "description": "",
+						 "enum": [
+							"none",
+							"investment-ratio"
+						]
+					},
+					 "ComplianceRuleParameters": {
+						 "description": "Input parameters of compliances rules",
+						 "$ref": "../../dltshift-definitions.json#/definitions/NameValueList"
+					}
+				},
+				 "required": [
+					"ComplianceRule"
+				]
+			}
+		},
+		 "OperationsSpec": {
+			 "description": "A general specification for operations, applicable to a fund or to a specific vehicle. Fund / Vehicle may coexist. In this case, vehicle definitions override the fund's",
+			 "type": "object",
+			 "properties": {
+				 "SupportedOperations": {
+					 "description": "The set of allowed operations on this fund",
+					 "type": "array",
+					 "minItems": 1,
+					 "uniqueItems": true,
+					 "items": {
+						 "type": "object",
+						 "properties": {
+							 "Operation": {
+								 "$ref": "#/definitions/FundOperation"
+							}
+						}
+					}
+				},
+				 "RulesForOperations": {
+					 "description": "The set of operations specific rules. Generic rules may be set on Operation ANY",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "type": "object",
+						 "minItems": 1,
+						 "uniqueItems": true,
+						 "properties": {
+							 "Operation": {
+								 "description": "Key is the operation type. any is a possible value",
+								 "$ref": "#/definitions/FundOperationRule"
+							},
+							 "OperationNAVRules": {
+								 "$ref": "#/definitions/FundOperationNAVRules"
+							},
+							 "OperationCalendarRules": {
+								 "$ref": "#/definitions/FundOperationCalendarRules"
+							},
+							 "OperationComplianceRules": {
+								 "$ref": "#/definitions/FundOperationComplianceRules"
+							},
+							 "OperationContractualConstraintsRules": {
+								 "description": "@todo"
+							},
+							 "OperationNegotiatedRules": {
+								 "description": "@todo"
+							},
+							 "OperationFeesRules": {
+								 "description": "@todo"
+							}
+						},
+						 "required": [
+							"Operation"
+						]
+					}
+				},
+				 "ValuationRules": {
+					 "description": "Valuation master configuration",
+					 "$ref": "#/definitions/FundValuationRulesSpec"
+				}
+			}
+		}
+	}
+}

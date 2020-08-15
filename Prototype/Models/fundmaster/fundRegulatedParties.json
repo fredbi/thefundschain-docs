@@ -1,0 +1,19 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundRegulatedParties",
+	"description": "Collection of parties with regulated roles",
+	"type": "array",
+	"items": [
+		{
+			"RegulatedParty": {
+				"$ref": "fundPartyAttributedRoles.json#"
+			},
+			"properties": {
+				"JurisdictionRoot": {
+					"description": "The jurisdiction root under which all attributed roles fall (possibly with a subjurisdiction)",
+					"type": "string"
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,14 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundCompliance",
+	"description": "Description of compliance rules for any given jurisdiction (@todo)",
+	"definitions": {
+		"FundComplianceRule": {
+			"description": "Description of a specific compliance rule",
+			"type": "object",
+			"properties": {
+				
+			}
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "FundStateSchema",
+	 "description": "TheFundsChain schema supporting a fund's operating process (agreement, order, holdings bookeeping). This schema  entry is a fund, possibly publishing  several investment vehicles. Note: this schema is not stored as is: its sections are stored as standalone documents.",
+	 "type": "object",
+	 "properties": {
+		 "Header": {
+			 "$ref": "../../../../dltshift-definitions.json#/definitions/SchemaHeader"
+		},
+		 "FundMaster": {
+			 "description": "Master description sections. Should be stored as a standalone document",
+			 "$ref": "../../../../fundMaster/fundmaster.json"
+		},
+		"Holdings": {
+			 "description": "Holdings and investors description section. Should be stored as a standalone document",
+			 "$ref": "../../../../fundHoldings/fundholdings.json#"
+		},
+		"Valuation": {
+			"$ref": "../../../../fundHoldings/fundvaluation.json#"
+		},
+		 "CCDirSupport": {
+			 "description": "CCDir pattern support. Should be stored as a standalone document(@todo)"
+		},
+		 "ACLSupport": {
+			 "description": "ACL pattern support. Should be stored as a standalone document(@todo)"
+		}
+	}
+}

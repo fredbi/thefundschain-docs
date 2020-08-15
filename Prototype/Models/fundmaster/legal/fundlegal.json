@@ -1,0 +1,83 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "FundLegalSectionSchema",
+	 "title": "FundLegalSection",
+	 "description": "Generic section describing the legal aspect of a fund. This section may define subsections which are specific to a jurisdiction",
+	 "type": "object",
+	 "properties": {
+		 "FundRegulatedNature": {
+			 "description": "A fund may be regulated or unregulated (e.g. mandate)",
+			 "enum": [
+				"regulated",
+				"unregulated"
+			],
+			 "default": "regulated"
+		},
+		 "FundRegisteredNames": {
+			 "description": "List of names under which the fund is registered",
+			 "$ref": "../../dltshift-definitions.json#/definitions/Names"
+		},
+		 "Vehicles": {
+			 "description": "A fund refers either to a contract (e.g. mandate) or to  legal entity. Vehicles refer to investment products available to investors (e.g. fund shares, compartments) under this legal entity.",
+			 "type": "array",
+			 "uniqueItems": true,
+			 "items": {
+				 "$ref": "../fundvehicle.json#"
+			}
+		},
+		 "Parties": {
+			 "description": "This subsection describes all parties related to a fund.",
+			 "type": "array",
+			 "items": {
+				 "$ref": "../fundparty.json#"
+			}
+		},
+		 "LegalStructure": {
+			 "description": "This subsection relates to legal details for regulated funds",
+			 "type": "object",
+			 "properties": {
+				 "Jurisdiction": {
+					 "$ref": "fundregistration.json#/definitions/FundJurisdiction"
+				},
+				"Registration": {
+					 "description": "Registration details of the fund and fund's legal entity",
+					 "$ref": "fundregistration.json#/definitions/FundRegistration"
+				},
+				"FundAgreements": {
+					"description": "List of agreements delivered to the fund",
+					"$ref": "fundagreement.json#/definitions/FundOrVehicleAgreements"
+				},
+				"JurisdictionDetails": {
+					"description": "This subsection is specific to domestic regulatory / legal data or to specific rules when distributing in any given jurisdiction",
+					"type": "object",
+					"properties": {
+						"RegisteredForm": {
+							"description": "Fund registration form under its jurisdiction (e.g. SICAV, FCP...)",
+							"type": "string"
+						},
+						"ComplianceRules": {
+							"description": "List of domestic regulatory compliance rules",
+							"type": "array",
+							"items": {
+								"$ref": "fundcompliance.json#/definitions/FundComplianceRule"
+							}
+						}
+					}
+				}
+			},
+			 "required": [
+				"Jurisdiction",
+				"Registration"
+			]
+		},
+		"ContractualStructure": {
+			"description": "A contractual description, for unregulated funds (@todo)",
+			"type": "string"
+		}
+	},
+	 "required": [
+		"FundRegulatedNature",
+		"FundRegisteredNames",
+		"Parties"
+	]
+}

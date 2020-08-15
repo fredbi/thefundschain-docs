@@ -1,0 +1,242 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundOrdersSchema",
+	"description": "Definitions for fund orders: investor orders, special orders not generally available to investors and other operations such as opening/closing a vehicle or a fund",
+	"type": "array",
+	"items": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/InvestorOrder"
+			},
+			{
+				"$ref": "#/definitions/SpecialOrder"
+			},
+			{
+				"$ref": "#/definitions/OtherOrder"
+			}
+		]
+	},
+	"definitions": {
+		"InvestorOrderType": {
+			"description": "Order types available to investors",
+			"$ref": "../FundMaster/operations/fundoperations.json#/definitions/FundOrderType"
+		},
+		"SpecialOrderType": {
+			"description": "Order types available to TA or issuers",
+			"$ref": "../FundMaster/operations/fundoperations.json#/definitions/FundSpecialOrderType"
+		},
+		"OtherOrderType": {
+			"description": "Other order types available to TA or issuers",
+			"$ref": "../FundMaster/operations/fundoperations.json#/definitions/FundOtherOperationsType"
+		},
+		"QuantityOrAmountSpec": {
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"Quantity": {
+							"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"properties": {
+						"Amount": {
+							"$ref": "../dltshift-definitions.json#/definitions/Amount"
+						}
+					}
+				}
+			],
+			"additionalProperties": false
+		},
+		"QuantityAndAmountSpec": {
+			"AllOf": [
+				{
+					"type": "object",
+					"properties": {
+						"Quantity": {
+							"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"properties": {
+						"Amount": {
+							"$ref": "../dltshift-definitions.json#/definitions/Amount"
+						}
+					}
+				}
+			],
+			"additionalProperties": false
+		},
+		"OrderTimesSpec": {
+			"type": "object",
+			"properties": {
+				"TimeSubmitted": {
+					"description": "Timestamp when the order was initially submitted",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimeCutOff": {
+					"description": "Timestamp when the order became irevocable",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimeExecuted": {
+					"description": "Timestamp when the order was executed, with a price",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimeSettled": {
+					"description": "Timestamp when the order was settled",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimeFailed": {
+					"description": "Timestamp when the order was eventually given up as failed settlement",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimePlannedForExecution": {
+					"description": "Planned ahead time for execution (e.g. for corporate actions)",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimePlannedOptionExpiry": {
+					"description": "Time at which available option expires",
+					"type": "string",
+					"format": "date-time"
+				},
+				"TimeOptionExercised": {
+					"description": "Time at which available option has beed exercised (possibly with default choice)",
+					"type": "string",
+					"format": "date-time"
+				}
+			},
+			"required": [ "TimeSubmitted"]
+		},
+		"OrderPriceSpec": {
+			"type": "object",
+			"properties": {
+				"FixingDate": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"FixingPrice": {
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				}
+			}
+		},
+		"InvestorOrderSpec": {
+			"type": "object",
+			"properties": {
+				"OrderSpec": {
+					"description": "Order spec: quantity or amount",
+					"$ref": "#/definitions/QuantityOrAmountSpec"
+				},
+				"OrderStatus": {
+					"$ref": "./fundholdings.json#/definitions/PositionStatus"
+				},
+				"OrderTimes": {
+					"$ref": "#/definitions/OrderTimesSpec"
+				},
+				"OrderPrice": {
+					"$ref": "#/definitions/OrderPriceSpec"
+				},
+				"OrderFees": {
+					"$ref": "./fundfees.json#/definitions/OrderFeesSpec"
+				}
+			},
+			"required": [
+				"OrderSpec",
+				"OrderStatus",
+				"OrderTimes"
+			]
+		},
+		"SpecialOrderSpec": {
+			"description": "Description of special orders",
+			"type": "object",
+			"properties": {
+				"OrderSpec": {
+					"description": "Order spec: quantity or amount",
+					"$ref": "#/definitions/QuantityOrAmountSpec"
+				},
+				"OrderStatus": {
+					"$ref": "./fundholdings.json#/definitions/PositionStatus"
+				},
+				"OrderTimes": {
+					"$ref": "#/definitions/OrderTimesSpec"
+				},
+				"OrderPrice": {
+					"$ref": "#/definitions/OrderPriceSpec"
+				},
+				"OrderFees": {
+					"$ref": "./fundfees.json#/definitions/OrderFeesSpec"
+				}
+			},
+			"required": [
+				"OrderSpec",
+				"OrderStatus",
+				"OrderTimes"
+			]
+		},
+		"InvestorOrder": {
+			"description": "Full description of an investor order",
+			"type": "object",
+			"properties": {
+				"OrderType": {
+					"$ref": "#/definitions/InvestorOrderType"
+				},
+				"OrderSpec": {
+					"$ref": "#/definitions/InvestorOrderSpec"
+				},
+				"OrderEstimates": {
+					"description": "Order estimates from spec: amount from quantity / quantity from amount, dates etc..",
+					"$ref": "#/definitions/InvestorOrderSpec"
+				},
+				"OrderFinal": {
+					"description": "Final order description",
+					"$ref": "#/definitions/InvestorOrderSpec"
+				}
+			},
+			"required": [
+				"OrderType",
+				"OrderSpec"
+			]
+		},
+		"SpecialOrder": {
+			"description": "Full description of a special order",
+			"type": "object",
+			"properties": {
+				"OrderType": {
+					"$ref": "#/definitions/SpecialOrderType"
+				},
+				"OrderSpec": {
+					"$ref": "#/definitions/SpecialOrderSpec"
+				}
+			},
+			"required": [
+				"OrderType",
+				"OrderSpec"
+			]
+		},
+		"OtherOrder": {
+			"description": "Full description of other orders",
+			"type": "object",
+			"properties": {
+				"OrderType": {
+					"$ref": "#/definitions/OtherOrderType"
+				},
+				"OrderSpec": {
+					"$ref": "#/definitions/SpecialOrderSpec"
+				}
+			},
+			"required": [
+				"OrderType",
+				"OrderSpec"
+			]
+		}
+	}
+}

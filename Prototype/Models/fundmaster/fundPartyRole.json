@@ -1,0 +1,45 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"description": "Supported functional roles: ACC Fund accountant CLR Clearer CSH Cash account holder CTK Caretaker CUS Fund custodian DIS Distributor FMG Fund Manager INV Investor ISR Issuer (or promoter) LEI Legal Entity identification authority PAG Paying Agent REG Regulator RGR Registrar SEC Investor’s securities custodian SIA Security Identification authority STL Settlement system operator TAG Transfer Agent VSP Value-added service provider",
+	"type": "object",
+	"properties": {
+		"PartyRole": {
+			"minLength": 3,
+			"maxLength": 3,
+			"enum": [
+				"ACC",
+				"CLR",
+				"CTK",
+				"CUS",
+				"DIS",
+				"FMG",
+				"INV",
+				"ISR",
+				"LEI",
+				"PAG",
+				"REG",
+				"RGR",
+				"SEC",
+				"SIA",
+				"STL",
+				"TAG",
+				"VSP"
+			]
+		},
+		"Juridiction": {
+			"type": "string"
+		},
+		"AgreedByParty": {
+			"type": "string"
+		},
+		"ValidityPeriod": {
+			"$ref": "../dtlshift/period.json#"
+		},
+		"AgreementSignature": {
+			"type": "string"
+		}
+	},
+	"required": [
+		"PartyRole"
+	]
+}

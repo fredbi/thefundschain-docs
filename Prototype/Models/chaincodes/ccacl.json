@@ -1,0 +1,226 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "ChainCodeACLschema",
+	 "description": "Definitions for contractual roles defined by this chaincode",
+	 "type": "array",
+	 "items": {
+		 "$ref": "#/definitions/ContractualRole"
+	},
+	 "definitions": {
+		 "ClearanceLevel": {
+			 "type": "string",
+			 "enum": [
+				"public",
+				"restricted",
+				"confidential",
+				"secret",
+				"topsecret"
+			]
+		},
+		 "GrantSpec": {
+			 "type": "string",
+			 "enum": [
+				"owner",
+				"O",
+				"read",
+				"R",
+				"write",
+				"W",
+				"grant",
+				"G",
+				"denied-read", "DR",
+				"filtered-read", "FR"
+			]
+		},
+		 "FunctionalRole": {
+			 "description": "A business role",
+			 "type": "string",
+			 "enum": [
+				"issuer",
+				"ISR",
+				"fund-custodian",
+				"CUS",
+				"fund-accountant",
+				"ACC",
+				"transfer-agent",
+				"TAG",
+				"registrar",
+				"RGR",
+				"distributor",
+				"DIS",
+				"clearer",
+				"CLR",
+				"caretaker",
+				"CTK",
+				"regulator",
+				"REG",
+				"investor",
+				"INV",
+				"investor-sec-custodian",
+				"SEC",
+				"investor-cash-custodian",
+				"CSH",
+				"fund-manager",
+				"FMG",
+				"lei-authority",
+				"LEI",
+				"paying-agent",
+				"PAG",
+				"securities-ident-authority",
+				"SIA",
+				"settlement-system",
+				"STL",
+				"service-provider",
+				"VSP"
+			]
+		},
+		 "ValidationRole": {
+			 "description": "Technical roles in terms of Hyperledger Fabric validation process role",
+			 "type": "string",
+			 "enum": [
+				"endorser",
+				"committer",
+				"orderer",
+				"none"
+			]
+		},
+		 "ProfileSpec": {
+			 "description": "List of available profiles for users",
+			 "type": "string",
+			 "enum": [
+				"todo"
+			]
+		},
+		 "MemberReferenceTypeSpec": {
+			 "description": "Determines how a member is qualified. 'Any' refers to any identity which provides the required credentials (e.g. attribute certificate).",
+			 "type": "string",
+			 "enum": [
+				"msp",
+				"organization",
+				"organization-unit",
+				"any"
+			]
+		},
+		 "MemberReferenceSpec": {
+			 "description": "A reference to a member, with a specified type (MSP, organization or organization unit)",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "MemberReferenceType": {
+					 "$ref": "#/definitions/MemberReferenceTypeSpec"
+				},
+				 "MemberReference": {
+					 "type": "string"
+				}
+			}
+		},
+		 "CheckedMemberReferenceSpec": {
+			 "description": "A reference to a member, with a specified attribute certificate signatory",
+			 "allOf": [
+				{
+					 "$ref": "#/definitions/MemberReferenceSpec"
+				},
+				{
+					 "type": "object",
+					 "additionalProperties": false,
+					 "properties": {
+						 "AttributeCertificateSignedBy": {
+							 "$ref": "#/definitions/MemberReferenceSpec"
+						}
+					},
+					 "required": [
+						"AttributeCertificateSignedBy"
+					]
+				}
+			]
+		},
+		 "ContractualRole": {
+			 "description": "Definition of a contractual role for a chaincode",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Role": {
+					 "description": "The role being specified",
+					 "$ref": "#/definitions/FunctionalRole"
+				},
+				 "Members": {
+					 "description": "Members allowed for this role by the current chaincode: membership may refer to MSP's, organizations or organization units, or any holder of a given certificate attribute",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "oneOf": [
+							{
+								 "$ref": "#/definitions/MemberReferenceSpec"
+							},
+							{
+								 "$ref": "#/definitions/CheckedMemberReferenceSpec"
+							}
+						]
+					}
+				},
+				 "Profiles": {
+					 "description": "List of enabled profiles for this role",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "$ref": "#/definitions/ProfileSpec"
+					}
+				}
+			}
+		},
+		 "Grant": {
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Privilege": {
+					 "$ref": "#/definitions/GrantSpec"
+				},
+				 "Grantees": {
+					 "type": "array",
+					 "items": {
+						 "$ref": "#/definitions/CheckedMemberReferenceSpec"
+					}
+				}
+			}
+		},
+		 "EbacSpec": {
+			 "description": "EBAC vector, applied to a data node in the schema hierarchiy",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Level": {
+					 "description": "Required clearance level for accesser",
+					 "$ref": "#/definitions/ClearanceLevel"
+				},
+				 "ACL": {
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "$ref": "#/definitions/Grant"
+					}
+				}
+			}
+		},
+		 "EbacItem": {
+			 "description": "An entity-based access control item",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "JsonPath": {
+					 "type": "string"
+				},
+				 "Ebac": {
+					 "$ref": "#/definitions/EbacSpec"
+				}
+			}
+		},
+		 "EbacObject": {
+			 "description": "Master configuration for EBAC",
+			 "type": "array",
+			 "uniqueItems": true,
+			 "items": {
+				 "$ref": "#/definitions/EbacItem"
+			}
+		}
+	}
+}

@@ -1,0 +1,14 @@
+[
+	{
+		"SpecItem": "OrderFeesType",
+		"Descriptions": [
+			{"Name": "transaction-fee", "Value": "Transactions fees (platform access & costs)" },
+			{"Name": "frontend-load", "Value": "Front-end load fees (distribution)" },
+			{"Name": "backend-load", "Value": "Back-end load (distribution)" },
+			{"Name": "no-load", "Value": "Order not loaded" }
+		]		
+	}
+
+]
+
+

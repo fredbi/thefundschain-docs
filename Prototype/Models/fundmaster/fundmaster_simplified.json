@@ -1,0 +1,63 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "FundMasterSchema",
+	 
+	 "description": "List of sections to describe the master (static) state of a fund.",
+	 "type": "array",
+	 "minItems": 1,
+	 "maxItems": 5,
+	 "uniqueItems": true,
+	 "items": {
+		 "$ref": "#/definitions/FundMasterSection"
+	},
+	 "definitions": {
+		 "FundSectionPayload": {
+			 "type": "object",
+			 "oneOf": [
+				{
+					 "$ref": "./legal/fundlegal.json#"
+				},
+				{
+					 "$ref": "./operations/fundoperations.json#"
+				},
+				{
+					 "$ref": "./fiscal/fundfiscal.json#"
+				},
+				{
+					 "$ref": "./contractual/fundcontractual.json#"
+				},
+				{
+					 "$ref": "./distribution/funddistribution.json#"
+				}
+			]
+		},
+		 "FundSectionType": {
+			 "type": "string",
+			 "enum": [
+				"fundlegal",
+				"fundoperations",
+				"fundfiscal",
+				"fundcontractual",
+				"funddistribution"
+			]
+		},
+		 "FundMasterSection": {
+			 "type": "object",
+			 "properties": {
+				 "SectionType": {
+					 "$ref": "#/definitions/FundSectionType"
+				},
+				 "DocumentID": {
+					 "$ref": "../dltshift-definitions.json#/definitions/DocumentID"
+				},
+				 "SectionPayload": {
+					 "$ref": "#/definitions/FundSectionPayload"
+				}
+			},
+			 "required": [
+				"SectionType",
+				"SectionPayload"
+			]
+		}
+	}
+}

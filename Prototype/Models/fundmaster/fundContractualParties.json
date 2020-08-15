@@ -1,0 +1,19 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundContractualParties",
+	"description": "Collection of parties for a given chaincode (contractual)",
+	"type": "array",
+	"items": [
+		{
+			"ContractualParty": {
+				"$ref": "fundPartyAttributedRoles.json#"
+			},
+			"properties": {
+				"ChaincodeID": {
+					"description": "The chaincode context for which this role setup applies",
+					"type": "string"
+				}
+			}
+		}
+	]
+}

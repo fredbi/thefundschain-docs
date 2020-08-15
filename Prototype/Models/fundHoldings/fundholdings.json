@@ -1,0 +1,176 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundHoldingsSchema",
+	"description": "All registries for investors in a fund",
+	"type": "object",
+	"properties": {
+		"DocumentID": {
+			"$ref": "../dltshift-definitions.json#/definitions/DocumentID"
+			},
+		"Investors": {
+			"description": "Investors' identity cross-reference map",
+			"$ref": "#/definitions/InvestorsSpec"
+		},
+		"Registries": {
+			"description": "All registries of the fund",
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/FundRegistry"
+			}
+		}
+	},
+	"definitions": {
+		"PositionStatus": {
+			"description": "The position status according to known orders status [support abbreviated codes]",
+			"type": "string",
+			"enum": [
+				"settled",
+			 	"pendingSettlement",
+			 	"pendingInstruction",
+			 	"executed",
+			 	"pendingExecution",
+			 	"transmitted",
+			 	"rejected",
+			 	"failedSettlement",
+			 	"failedInstruction",
+			 	"failedExecution",
+			 	"S","PS","PI","X","PX","T","FT","FS","FI","FX"
+			]
+		},
+		"HoldingsLine": {
+			"type": "object",
+			"allOf": [
+				{ "$ref": "../dltshift-definitions.json#/definitions/BaseInventoryLine"},
+				{
+					"properties": {
+						"Investor": {
+							"$ref": "../fundInvestor/fundInvestor.json#/definitions/InvestorRef"
+						},
+						"Status": {
+						 	"description": "Position status",
+						 	"$ref": "#/definitions/PositionStatus"
+						},
+						"Earmarking": {
+							"description": "A structure describing the earmarkings associated with the position (@todo)",
+							"type": "string"
+						}			
+					},
+					"required": [
+						"Investor","Status"
+					]
+				}
+			]
+		},
+		"InvestorsSpec":{
+			"description": "Cross references for InvestorRef and identities (@todo)",
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"InvestorRef": {
+						"$ref": "../fundInvestor/fundInvestor.json#/definitions/InvestorRef"
+					},
+					"Identity": {
+						"$ref": "../fundInvestor/fundInvestor.json#/definitions/IdentitySpec"
+					}
+				},
+				"required": [
+					"InvestorRef",
+					"Identity"
+				]
+			}
+		},
+		"RegistrySummarySpec": {
+			"description": "The current summary of the registry, in terms of units, amounts and valuation prices. This summary is updated with every operation",
+			"type": "object",
+			"properties": {
+				"TotalOutstandingUnits": {
+					"description": "Total number of units in settled status",
+					"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+				},
+				"CurrentPendingSettlementUnits": {
+					"description": "Total number of units in pending settlement status",
+					"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+				},
+				"CurrentPendingExecutionUnits": {
+					"description": "Total number of units in pending execution status",
+					"$ref": "../dltshift-definitions.json#/definitions/Decimal"
+				},
+				"TotalOutstandingAmount": {
+					"description": "Total outstanding units valued at currrent unit price",
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"CurrentUnitPrice": {
+					"description": "Reflects the last known price at the registry's reference date",
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"CurrentPendingSettlementAmount": {
+					"description": "Total pending settlement units valued at transaction price",	
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"CurrentPendingExecutionAmount": {
+					"description": "Total pending execution units valued at estimated price",	
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"NetAssetValue": {
+					"description": "Net asset value of the fund/vehicle",
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"GrossAssetValue": {
+					"description": "Gross asset value of the fund/vehicle",
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"UnallocatedNetAssetValue": {
+					"description": "Difference between net value and total outstanding amount. This amount must be consistent with NAV rounding rules (see NAVDecimalization). This amount is redeemed to investors upon fund closure/merger",
+					"$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				"ProvisionedFees": {
+					"$ref": "./fundfees.json#/definitions/ProvisionedFeesSpec"
+				}
+			},
+			"required": [
+						"TotalOutstandingAmount"
+					]
+		},
+		"FundRegistry": {
+			"type": "object",
+			"description": "The registry of investors in a fund",
+			"properties": {
+				"RegistryID": {
+					"description": "A unique identifier for the registry (it should be possible to maintain several registries)",
+					"type": "string"
+				},
+				"VehicleID": {
+					"description": "Tells that the registry is applicable to a specific vehicle only",
+					"$ref": "../FundMaster/fundvehicle.json#/definitions/VehicleID"
+				},	
+				"RegistryReferenceDate": {
+					"description": "The lastest registry update or the references date for past registries (statement of holdings)",
+					"type": "string",
+					"format": "date-time"
+				},
+				"RegistrySummary": {
+					"$ref": "#/definitions/RegistrySummarySpec"
+				},
+				"Registry": {
+					"description": "Registry of investors holdings",
+					"type": "array",
+					"uniqueItems": true,
+					"items": {
+						"$ref": "#/definitions/HoldingsLine"
+					}
+				},
+				"Orders":  {
+					"description": "Pending orders on the registry (plus possibly recent settled orders for statistics)",
+					"$ref": "./fundorders.json"
+				}
+			},
+			"required": [
+				"RegistryReferenceDate",
+				"RegistrySummary",
+				"Registry"
+			]
+		}
+	}
+}

@@ -1,0 +1,52 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundVehicleSchema",
+	"definitions": {
+		"VehicleID": {
+			"description": "Internal identifier of a vehicle. Must be unique within a fund. Automatically allocated by chaincode",
+			"type": "string"
+		}	
+	},
+	"description": "Description of an investment vehicle",
+	"type": "object",
+	"properties": {
+		"FundVehicleType": {
+			"description": "The type of investment vehicle",
+			"type": "string",
+			"enum": [
+				"shareclass",
+				"compartment",
+				"subfund",
+				"carveout"
+			]
+		},
+		"FundVehicleID": {
+			"$ref": "#/definitions/VehicleID"
+		},
+		"RegisteredSecurityCode": {
+			"description": "Whenever an investment vehicle is issued as a security, it's market security code.",
+			"$ref": "../dltshift-definitions.json#/definitions/RegisteredSecurityCode"
+		},
+		"FundVehicleNames": {
+			"description": "Different naming conventions for any given vehicle. The auto naming makes a name from the fund's name and a vehicle security code",
+			"$ref": "../dltshift-definitions.json#/definitions/Names"
+		},
+		"FundVehicleAgreements": {
+			"description": "List of agreements for this vehicle (e.g. distribution agreement)",
+			"$ref": "legal/fundagreement.json#/definitions/FundOrVehicleAgreements"
+		},
+		"TargetInvestors": {
+			"description": "Information provided about the category of investors targeted by this vehicle. Helps self-compliance checks",
+			"type": "object"
+		},
+		"Fees": {
+			"description": "Information about fees collection regime for this vehicle",
+			"type": "object"
+		}
+	},
+	"required": [
+		"FundVehicleType",
+		"FundVehicleID",
+		"FundVehicleNames"
+	]
+}

@@ -1,0 +1,148 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "FundValuationSchema",
+	 "definitions": {
+		 "NAVStatus": {
+			 "description": "NAV status: official (usable for order, possibly not yet publish), published (officially published), official revised, technical (non official, not usable for orders [support abreviated codes]. Deprecated NAV are used to audit previously used NAV which have been revised",
+			 "type": "string",
+			 "enum": [
+				"official",
+				"published",
+				"revised",
+				"technical",
+				"deprecated",
+				"O",
+				"P",
+				"R",
+				"T",
+				"D"
+			]
+		},
+		 "NAVCalendarItemSpec": {
+			 "description": "The extended object attached to a NAV calendar entry",
+			 "type": "object",
+			 "properties": {
+				 "Status": {
+					 "$ref": "#/definitions/NAVStatus"
+				},
+				 "CalendarEntryInitializedOn": {
+					 "type": "string",
+					 "format": "date-time"
+				},
+				 "CalendarEntryRuleApplied": {
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"CalendarEntryInitializedOn",
+				"CalendarEntryRuleApplied"
+			]
+		},
+		 "NAVTimeSeriesItemSpec": {
+			 "description": "The extended object attached to a NAV time series entry",
+			 "type": "object",
+			 "properties": {
+				 "UnitPrice": {
+					 "description": "The NAV per unit",
+					 "$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				 "Status": {
+					 "$ref": "#/definitions/NAVStatus"
+				},
+				 "GrossUnitPrice": {
+					 "description": "The GAV per share",
+					 "$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				 "NetAssetValue": {
+					 "$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				 "GrossAssetValue": {
+					 "$ref": "../dltshift-definitions.json#/definitions/Amount"
+				},
+				 "TimeSeriesEntryUpdatedOn": {
+					 "type": "string",
+					 "format": "date-time"
+				}
+			},
+			 "required": [
+				"TimeSeriesEntryUpdatedOn",
+				"UnitPrice",
+				"Status"
+			]
+		},
+		 "NAVCalendarItem": {
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "../dltshift-definitions.json#/definitions/CalendarItem"
+				},
+				{
+					 "$ref": "#/definitions/NAVCalendarItemSpec"
+				}
+			]
+		},
+		 "NAVTimeSeriesItem": {
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "../dltshift-definitions.json#/definitions/CalendarItem"
+				},
+				{
+					 "$ref": "#/definitions/NAVTimeSeriesItemSpec"
+				}
+			]
+		},
+		 "NAV": {
+			 "type": "object",
+			 "properties": {
+				 "FundVehicleID": {
+					 "description": "When vehicle is not defined, applies to the fund",
+					 "$ref": "../FundMaster/fundvehicle.json#/definitions/VehicleID"
+				},
+				 "NAVTimeSeries": {
+					 "description": "NAVs history for fund or vehicle",
+					 "type": "array",
+					 "uniqueItems": true,
+					 "items": {
+						 "$ref": "#/definitions/NAVTimeSeriesItem"
+					}
+				}
+			},
+			"additionalProperties": false,
+			 "required": [
+				"FundVehicleID",
+				"NAVTimeSeries"
+			]
+		},
+		 "NAVCalendar": {
+			"description": "Pre-calculated NAV calendar according to rules and exceptions",
+			"type": "object",
+			"properties": {
+				"Calendar": {
+					"type": "array",
+					"uniqueItems": true,
+					"items": {
+						"$ref": "#/definitions/NAVCalendarItem"			 	
+					}
+				}
+			}
+		}
+	},
+	"description": "Valuation section of a fund and its vehicles, to stores NAV calendars (with look-ahead) and NAV history",
+	"type": "object",
+	"properties": {
+		"Valuations": {
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"allOf": [
+					{ "$ref": "#/definitions/NAV" },
+					{ "$ref": "#/definitions/NAVCalendar" }
+				]
+			}
+		}
+	},
+	 "required": [
+		"Valuations"
+	]
+}

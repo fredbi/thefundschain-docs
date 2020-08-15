@@ -1,0 +1,418 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "Dltshift-DefinitionsSchema",
+	 "title": "Dltshift-Definitions",
+	 "description": "Common types definitions",
+	 "definitions": {
+		 "Decimal": {
+			 "description": "Decimal number",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Radix": {
+					 "description": "Integer representation of a decimal",
+					 "type": "integer",
+					 "default": 0
+				},
+				 "Precision": {
+					 "description": "Precision: number of digits in the decimal part",
+					 "type": "integer",
+					 "default": 2
+				}
+			},
+			 "required": [
+				"Radix",
+				"Precision"
+			]
+		},
+		 "Period": {
+			 "description": "A period defined by start and end date",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "StartDate": {
+					 "type": "string",
+					 "format": "date-time",
+					 "default": "1901-01-01T00:00:00.000Z"
+				},
+				 "EndDate": {
+					 "type": "string",
+					 "format": "date-time",
+					 "default": "2079-01-01T00:00:00.000Z"
+				}
+			},
+			 "required": [
+				"StartDate",
+				"EndDate"
+			]
+		},
+		 "TimeUnit": {
+			 "description": "Time units supported to express durations [support abreviated values]",
+			 "type": "string",
+			 "enum": [
+				"sec",
+				"min",
+				"hour",
+				"day",
+				"banking-day",
+				"week",
+				"month",
+				"quarter",
+				"year",
+				"S",
+				"MI",
+				"H",
+				"D",
+				"BD",
+				"W",
+				"M",
+				"Q",
+				"Y"
+			]
+		},
+		 "Duration": {
+			 "description": "A duration expressed as an integer with a time unit",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Time": {
+					 "type": "integer"
+				},
+				 "TimeUnit": {
+					 "$ref": "#/definitions/TimeUnit"
+				}
+			},
+			 "required": [
+				"Time",
+				"TimeUnit"
+			]
+		},
+		 "Multinames": {
+			 "description": "Object with short and long names",
+			 "type": "object",
+			 "properties": {
+				 "ShortName": {
+					 "type": "string",
+					 "default": "N/A"
+				},
+				 "LongName": {
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"ShortName"
+			]
+		},
+		 "TypedName": {
+			 "description": "A short/long naming pair with a type",
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "#/definitions/Multinames"
+				},
+				{
+					 "properties": {
+						 "NameType": {
+							 "description": "The type of naming. Auto refer to automatic category, i.e. none explicitly defined",
+							 "type": "string",
+							 "enum": [
+								"legalName",
+								"commercialName",
+								"auto"
+							],
+							 "default": "legalName"
+						}
+					},
+					 "required": [
+						"NameType"
+					]
+				}
+			]
+		},
+		 "SchemaHeader": {
+			 "description": "A schema version control header",
+			 "type": "object",
+			 "properties": {
+				 "SchemaVersion": {
+					 "title": "Schema version number",
+					 "description": "Schema version number",
+					 "type": "string",
+					 "default": "1.0.0"
+				},
+				 "Compatibility": {
+					 "description": "Schema compatibility informations",
+					 "type": "object",
+					 "properties": {
+						 "BackwardCompatibleFromVersion": {
+							 "type": "string"
+						}
+					}
+				}
+			},
+			 "required": [
+				"SchemaVersion"
+			]
+		},
+		 "Currency": {
+			 "description": "A currency is an ISO alpha-3 code (@todo: enum)",
+			 "type": "string",
+			 "minLength": 3,
+			 "maxLength": 3,
+			 "default": "EUR"
+		},
+		 "Country": {
+			 "description": "An ISO Alpha-2 country code. @todo: could be constrained with enum...",
+			 "type": "string",
+			 "minLength": 2,
+			 "maxLength": 2
+		},
+		 "Amount": {
+			 "description": "An amount is a decimal number with a currency",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "Amount": {
+					 "$ref": "#/definitions/Decimal"
+				},
+				 "Currency": {
+					 "$ref": "#/definitions/Currency"
+				}
+			},
+			 "required": [
+				"Amount",
+				"Currency"
+			],
+			 "additionalProperties": false
+		},
+		 "Names": {
+			 "description": "A list of typed names (long/short version)",
+			 "type": "array",
+			 "uniqueItems": true,
+			 "items": {
+				 "$ref": "#/definitions/TypedName"
+			}
+		},
+		 "Seal": {
+			 "description": "Signature of a structure: hash of the structure with Seal set to empty string is signed by a signatory",
+			 "type": "object",
+			 "properties": {
+				 "SignatoryPK": {
+					 "description": "Public Key of the signatory, provided here for convenience (as it should be externally verified)",
+					 "type": "string"
+				},
+				 "SignatoryName": {
+					 "description": "Name of the signatory, provided here for convenience",
+					 "type": "string"
+				},
+				 "SignedStructure": {
+					 "description": "Signed hash of the structure sealed",
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"SignedStructure"
+			]
+		},
+		 "Visa": {
+			 "description": "Auhority agreement notice in writing (plain text)",
+			 "type": "object",
+			 "properties": {
+				 "VisaNotice": {
+					 "type": "string"
+				},
+				 "VisaDate": {
+					 "type": "string",
+					 "format": "date-time"
+				},
+				 "AuthorityRepresentedBy": {
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"VisaNotice",
+				"VisaDate",
+				"AuthorityRepresentedBy"
+			]
+		},
+		 "SecurityCode": {
+			 "description": "Description of a security code",
+			 "type": "object",
+			 "additionalProperties": false,
+			 "properties": {
+				 "SecurityCodeType": {
+					 "enum": [
+						"isin",
+						"cusip",
+						"sedol"
+					],
+					 "default": "isin"
+				},
+				 "SecurityCode": {
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"SecurityCodeType",
+				"SecurityCode"
+			]
+		},
+		 "RegisteredSecurityCode": {
+			 "description": "A security with a track of the registration authority, e.g. used by a fund product or investment vehicle",
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "#/definitions/SecurityCode"
+				},
+				{
+					 "properties": {
+						 "SecurityRegistrationAuthorityPK": {
+							 "description": "The public key of the registration authority",
+							 "type": "string"
+						},
+						 "SecurityRegistrationAuthorityName": {
+							 "description": "The name of the registration authority",
+							 "type": "string"
+						},
+						 "SecurityRegistrationAuthoritySignature": {
+							 "description": "The signed registered code by the authority",
+							 "type": "string"
+						}
+					},
+					 "required": [
+						"SecurityRegistrationAuthorityPK",
+						"SecurityRegistrationAuthorityName",
+						"SecurityRegistrationAuthoritySignature"
+					]
+				}
+			]
+		},
+		 "PartyAddress": {
+			 "description": "A generic address for any legal entity or physical person. @todo",
+			 "type": "object",
+			 "properties": {
+				 "address": {
+					 "type": "string"
+				},
+				 "country": {
+					 "type": "string"
+				}
+			}
+		},
+		 "BaseInventoryLine": {
+			 "description": "Base Inventory Line from which all inventories are derived",
+			 "type": "object",
+			 "properties": {
+				 "Quantity": {
+					 "$ref": "#/definitions/Decimal"
+				},
+				 "LastModified": {
+					 "type": "string",
+					 "format": "date-time"
+				}
+			},
+			 "required": [
+				"Quantity"
+			]
+		},
+		 "OwnerInventoryLine": {
+			 "description": "sample derivation. @todo move to PTF",
+			 "type": "object",
+			 "allOf": [
+				{
+					 "$ref": "#/definitions/BaseInventoryLine"
+				},
+				{
+					 "properties": {
+						 "InstrumentRef": {
+							 "type": "string"
+						},
+						 "InventoryStatus": {
+							 "type": "string"
+						}
+					},
+					 "required": [
+						"InstrumentRef",
+						"InventoryStatus"
+					]
+				}
+			]
+		},
+		 "Weekday": {
+			 "description": "Base week days",
+			 "type": "string",
+			 "enum": [
+				"monday",
+				"tuesday",
+				"wednesday",
+				"thursday",
+				"friday",
+				"saturday",
+				"sunday"
+			]
+		},
+		 "Frequency": {
+			 "description": "Base frequencies",
+			 "type": "string",
+			 "enum": [
+				"daily",
+				"weekly",
+				"fortnightly",
+				"monthly",
+				"quarterly",
+				"yearly"
+			]
+		},
+		 "CalendarItem": {
+			 "description": "Base calendar entry",
+			 "type": "object",
+			 "properties": {
+				 "DateSpec": {
+					 "type": "string",
+					 "format": "date-time"
+				},
+				 "DateComment": {
+					 "type": "string"
+				}
+			},
+			 "required": [
+				"DateSpec"
+			]
+		},
+		 "DocumentID": {
+			 "description": "A persistent document ID (couch DB)",
+			 "type": "string"
+		},
+		 "NameValueList": {
+			 "type": "array",
+			 "additionalProperties": false,
+			 "items": {
+				 "type": "object",
+				 "additionalItems": false,
+				 "properties": {
+					 "Name": {
+						 "type": "string"
+					},
+					 "Value": {
+						 "type": "string"
+					}
+				},
+				"required": [
+					"Name",
+					"Value"
+				]
+			}
+		},
+		 "SpecDescription": {
+			 "description": "An array of full text descriptions of constants and values used in various enums by the schema",
+			 "type": "object",
+			 "properties": {
+				 "SpecItem": {
+					 "type": "string"
+				},
+				 "Descriptions": {
+					 "$ref": "#/definitions/NameValueList"
+				}
+			}
+		}
+	}
+}

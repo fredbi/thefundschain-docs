@@ -1,0 +1,14 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "FundInvestorSchema",
+	"definitions": {
+	 	"InvestorRef": {
+			"description": "A reference to the investor directory, locally unique to the CC",
+			"type": "string"
+		},
+	 	"IdentitySpec": {
+			"description": "Investor identity (@todo)",
+	 		"type": "string"
+	 	}
+	}
+}

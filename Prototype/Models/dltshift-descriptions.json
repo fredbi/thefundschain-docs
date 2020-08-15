@@ -1,0 +1,9 @@
+{
+	 "$schema": "http://json-schema.org/draft-04/schema#",
+	 "id": "Dltshift-DescriptionsSchema",
+	 "type": "array",
+	 "additionalProperties": false,
+	 "items": {
+	 	"$ref": "./dltshift-definitions.json#/definitions/SpecDescription"
+	 }
+}
